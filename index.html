@@ -17,7 +17,7 @@
 <script>/* main.js が読めなかった場合に本文が消えたままにならないよう、3秒で保険を外す */
 var d=document.documentElement;d.className+=" js";setTimeout(function(){if(!d.dataset.sewInit)d.className=d.className.replace(" js","");},3000);</script>
 <!-- 更新したら v= の数字を上げること。古い CSS がキャッシュされたままになるのを防ぐ -->
-<link rel="stylesheet" href="style.css?v=3">
+<link rel="stylesheet" href="style.css?v=4">
 </head>
 <body>
 <a class="skip-link" href="#main">本文へスキップ</a>
@@ -113,13 +113,13 @@ var d=document.documentElement;d.className+=" js";setTimeout(function(){if(!d.da
     </div>
 
     <figure class="shots shots--phone">
-      <div class="shot shot--phone" style="--ratio: 1080 / 2340">
+      <div class="shot shot--phone" style="--ratio: 1080 / 2424">
         <img src="assets/kouza-home.png" alt="口座ノートの概要画面。現在の残高、今月の入出金の合計、最も多い支出のカテゴリと前月比が並んでいる。" loading="lazy" decoding="async">
       </div>
-      <div class="shot shot--phone" style="--ratio: 1080 / 2340">
+      <div class="shot shot--phone" style="--ratio: 1080 / 2424">
         <img src="assets/kouza-list.png" alt="口座ノートの入出金画面。日付とカテゴリ、金額の一覧が収入と支出で色分けされている。" loading="lazy" decoding="async">
       </div>
-      <div class="shot shot--phone" style="--ratio: 1080 / 2340">
+      <div class="shot shot--phone" style="--ratio: 1080 / 2424">
         <img src="assets/kouza-analysis.png" alt="口座ノートの分析画面。月ごとの収入と支出、収支の差額と、カテゴリ別の支出をドーナツ図で示している。" loading="lazy" decoding="async">
       </div>
       <figcaption>左から　概要　入出金　分析</figcaption>
@@ -221,6 +221,6 @@ var d=document.documentElement;d.className+=" js";setTimeout(function(){if(!d.da
   </div>
 </div>
 
-<script src="main.js?v=3" defer></script>
+<script src="main.js?v=4" defer></script>
 </body>
 </html>
