@@ -91,9 +91,9 @@ const FEET = {
 
 const EYE_ROW = 5, EYE_X = 14;
 
-function frame(feet, { asleep = false, paw = 0 } = {}) {
+function frame(feet, { asleep = false, paw = 0, blink = false } = {}) {
   const rows = TORSO.slice();
-  if (asleep) {
+  if (asleep || blink) {
     // 目を閉じる：黒目を輪郭色の横線にする
     const r = rows[EYE_ROW].split('');
     r[EYE_X - 1] = 'D'; r[EYE_X] = 'D'; r[EYE_X + 1] = 'D';
@@ -127,140 +127,137 @@ function draw(rows, bob) {
 }
 
 const el = document.getElementById('hamster');
-const WIDTH = 48;
-const MARGIN = 8;
 
-let x = -WIDTH;          // 画面外から
-let dir = 1;             // 1 = 右向き, -1 = 左向き
-let state = 'entering';
-let step = 0;            // 歩数（足の左右の切り替えに使う）
-let acc = 0, last = 0;   // 歩調を実時間で刻む（画面のリフレッシュレートに依存させない）
+/* ハムスターはマスコットとして定位置に立つ。左右には動かない。
+   スクロールしている間だけその場で走り、止まれば毛づくろい、やがて眠る。 */
+
+let state = 'idle';       // idle | running | grooming | sleeping | hop
+let step = 0;             // 歩数。足の左右を切り替える
+let acc = 0, last = 0;    // 歩調を実時間で刻む
 let raf = null;
-let breathe = null;
-let idleTimer = null, sleepTimer = null, groomTimer = null;
+let idleTick = null;      // 待機中のまばたきと寝息（rAF は使わない）
+let groomTimer = null, sleepTimer = null;
 
-// 右端は床の表示（URL）の手前まで。ハムスターは文字の上に乗らない
-const floorLabel = document.querySelector('.floor__label');
+const STRIDE_MS = 95;     // 走っているときの一歩
 
-const limit = () => {
-  const wall = floorLabel ? floorLabel.getBoundingClientRect().left : window.innerWidth;
-  return Math.max(MARGIN, wall - WIDTH - 10);
-};
-
-function place(bob = 0) {
-  el.style.transform = `translateX(${x}px) scaleX(${dir}) translateY(${-bob}px)`;
-}
-
+function lift(px) { el.style.transform = px ? `translateY(${-px}px)` : ''; }
 
 function stopLoop() { if (raf) { cancelAnimationFrame(raf); raf = null; } last = 0; acc = 0; }
-function stopBreathing() { if (breathe) { clearInterval(breathe); breathe = null; } }
-function clearTimers() {
-  clearTimeout(idleTimer); clearTimeout(sleepTimer); clearTimeout(groomTimer);
-}
+function stopTick() { if (idleTick) { clearInterval(idleTick); idleTick = null; } }
+function clearTimers() { clearTimeout(groomTimer); clearTimeout(sleepTimer); }
 
-/* --- 各状態 --- */
-
-function sit() {
+/* --- 待機。たまにまばたきするだけ --- */
+function idle() {
   state = 'idle';
-  stopLoop(); stopBreathing();
+  stopLoop(); stopTick(); clearTimers();
   draw(frame(FEET.stand), 0);
-  place();
-  clearTimers();
-  groomTimer = setTimeout(groom, 2600);
-  sleepTimer = setTimeout(sleep, 9000);
+  lift(0);
+  idleTick = setInterval(() => {
+    if (state !== 'idle') return;
+    if (Math.random() < 0.28) {                    // ときどき瞬きする
+      draw(frame(FEET.stand, { blink: true }), 0);
+      setTimeout(() => { if (state === 'idle') draw(frame(FEET.stand), 0); }, 130);
+    }
+  }, 1600);
+  groomTimer = setTimeout(groom, 4200);
+  sleepTimer = setTimeout(sleep, 14000);
 }
 
+/* --- 毛づくろい --- */
 function groom() {
   if (state !== 'idle') return;
   state = 'grooming';
+  stopTick();
   let n = 0;
   const id = setInterval(() => {
-    draw(frame(FEET.stand, { paw: (n % 2) + 1 }), 0);
-    if (++n > 7) { clearInterval(id); if (state === 'grooming') { state = 'idle'; draw(frame(FEET.stand), 0); } }
-  }, 160);
+    if (state !== 'grooming') { clearInterval(id); return; }
+    draw(frame(FEET.stand, { paw: (n % 2) + 1 }), n % 2);
+    if (++n > 9) { clearInterval(id); idle(); }
+  }, 150);
 }
 
+/* --- 就寝。rAF は止めたまま、寝息だけ --- */
 function sleep() {
   state = 'sleeping';
-  stopLoop(); clearTimers();
+  stopLoop(); stopTick(); clearTimers();
   let n = 0;
-  const render = () => draw(frame(FEET.stand, { asleep: true }), n++ % 2 === 0 ? 0 : 1);
+  const render = () => draw(frame(FEET.stand, { asleep: true }), n++ % 2);
   render();
-  stopBreathing();
-  breathe = setInterval(render, 1400);   // 寝息。rAF は回さない
+  idleTick = setInterval(render, 1500);
 }
 
-function walk() {
-  if (state !== 'entering') state = 'walking';
-  clearTimers();
-  stopBreathing();
+/* --- スクロール中はその場で走る --- */
+function run() {
+  state = 'running';
+  stopTick(); clearTimers();
   if (!raf) raf = requestAnimationFrame(loop);
 }
-
-const STRIDE_MS = 110;   // 一歩あたりの時間
-const STRIDE_PX = 5;     // 一歩で進む距離
 
 function loop(now) {
   raf = requestAnimationFrame(loop);
   if (!last) last = now;
-  acc += Math.max(0, Math.min(now - last, 100)); // タブ復帰時に飛ばない上限
+  acc += Math.max(0, Math.min(now - last, 100));
   last = now;
   if (acc < STRIDE_MS) return;
   acc = 0;
-
   step++;
-  const foot = step % 2 ? FEET.stepA : FEET.stepB;
-  const bob  = step % 2 ? 1 : 0;
-  draw(frame(foot), bob);
-
-  x += dir * STRIDE_PX;
-  if (state === 'entering') {
-    if (x >= MARGIN + 24) { x = MARGIN + 24; sit(); return; }
-  } else {
-    if (x >= limit()) { x = limit(); dir = -1; }
-    if (x <= MARGIN)   { x = MARGIN;  dir = 1;  }
-  }
-  place(bob);
+  draw(frame(step % 2 ? FEET.stepA : FEET.stepB), step % 2);
+  lift(step % 2 ? 1 : 0);
 }
 
 /* --- 入力 --- */
 
 let settle = null;
-let lastY = 0;
 addEventListener('scroll', () => {
   if (REDUCED) return;
-  if (state === 'sleeping') stopBreathing();      // スクロールで目を覚ます
-  dir = scrollY > lastY ? 1 : -1;
-  lastY = scrollY;
-  walk();
+  run();
   clearTimeout(settle);
-  settle = setTimeout(() => { if (state === 'walking') sit(); }, 320);
+  settle = setTimeout(() => { if (state === 'running') idle(); }, 260);
 }, { passive: true });
 
 el.addEventListener('click', () => {
   if (REDUCED) return;
-  if (state === 'sleeping') { stopBreathing(); sit(); return; }
-  // 起きているときは小さく跳ねる
-  clearTimers(); stopLoop();
+  clearTimers(); stopLoop(); stopTick();
   state = 'hop';
   let n = 0;
   const id = setInterval(() => {
-    draw(frame(FEET.stepA), n < 3 ? 2 : 0);
-    place(n < 3 ? 3 : 0);
-    if (++n > 5) { clearInterval(id); sit(); }
+    const up = n < 3;
+    draw(frame(FEET.stepA, { blink: up }), up ? 2 : 0);
+    lift(up ? 5 : 0);
+    if (++n > 5) { clearInterval(id); idle(); }
   }, 70);
 });
-
-addEventListener('resize', () => { if (x > limit()) { x = limit(); place(); } }, { passive: true });
 
 /* --- 起動 --- */
 
 if (REDUCED) {
-  x = MARGIN + 24;
   draw(frame(FEET.stand), 0);
-  place();
-  state = 'idle';
 } else {
-  place();
-  walk();
+  idle();
+}
+
+/* ---------- 3. 数値のカウントアップ ---------- */
+/* 実際に数えた行数なので、増えていく表示に意味がある */
+
+const counters = document.querySelectorAll('.metrics dd[data-count]');
+if (counters.length && !REDUCED && 'IntersectionObserver' in window) {
+  const fmt = new Intl.NumberFormat('ja-JP');
+  const io2 = new IntersectionObserver((entries) => {
+    for (const e of entries) {
+      if (!e.isIntersecting) continue;
+      io2.unobserve(e.target);
+      const node = [...e.target.childNodes].find(n => n.nodeType === 3 && n.nodeValue.trim());
+      if (!node) continue;
+      const target = Number(e.target.dataset.count);
+      const t0 = performance.now();
+      const tick = (now) => {
+        const p = Math.min(1, (now - t0) / 900);
+        const eased = 1 - Math.pow(1 - p, 3);      // 減速して着地する
+        node.nodeValue = fmt.format(Math.round(target * eased));
+        if (p < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    }
+  }, { threshold: 0.6 });
+  counters.forEach(c => io2.observe(c));
 }

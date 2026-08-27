@@ -200,8 +200,6 @@ a { color: inherit; }
 @media (min-width: 940px) {
   .patch--about   { grid-column: 1 / 9;  }
   .patch--figures { grid-column: 9 / 13; }
-  .patch--work    { grid-column: 1 / 9;  }
-  .patch--appmark { grid-column: 9 / 13; }
   .patch--record  { grid-column: 1 / 9;  }
   .patch--links   { grid-column: 9 / 13; }
 }
@@ -217,6 +215,24 @@ a { color: inherit; }
 }
 .js .patch.sewn::before { transform: scaleX(1); }
 .js .patch.sewn::after  { transform: scaleY(1); }
+
+/* 一覧を持つ入れ物は、自分では動かず子に順番を譲る */
+.js .patch > .stagger,
+.js .patch.sewn > .stagger { opacity: 1; transform: none; filter: none; transition: none; }
+
+.js .stagger > * { opacity: 0; transform: translateY(12px); }
+.js .patch.sewn .stagger > * {
+  opacity: 1; transform: none;
+  transition: opacity .52s var(--spring-snappy), transform .58s var(--spring-snappy);
+}
+.js .patch.sewn .stagger > *:nth-child(1) { transition-delay: .26s; }
+.js .patch.sewn .stagger > *:nth-child(2) { transition-delay: .32s; }
+.js .patch.sewn .stagger > *:nth-child(3) { transition-delay: .38s; }
+.js .patch.sewn .stagger > *:nth-child(4) { transition-delay: .44s; }
+.js .patch.sewn .stagger > *:nth-child(5) { transition-delay: .50s; }
+.js .patch.sewn .stagger > *:nth-child(6) { transition-delay: .56s; }
+.js .patch.sewn .stagger > *:nth-child(7) { transition-delay: .62s; }
+.js .patch.sewn .stagger > *:nth-child(n+8) { transition-delay: .68s; }
 
 .js .patch.sewn > *:nth-child(1) { transition-delay: .14s; }
 .js .patch.sewn > *:nth-child(2) { transition-delay: .21s; }
@@ -284,12 +300,11 @@ a { color: inherit; }
 /* ── 6. 見出し ───────────────────────────────────────── */
 
 .patch__title {
-  display: flex; align-items: center; gap: 12px;
-  margin: 0 0 clamp(20px, 2.4vw, 32px);
-  font-family: var(--mono); font-size: 11px; font-weight: 500;
-  letter-spacing: .16em; color: var(--ink-3);
+  display: flex; align-items: baseline; gap: 16px;
+  margin: 0 0 clamp(22px, 2.6vw, 34px);
+  font-family: var(--display); font-size: clamp(1.15rem, 2vw, 1.45rem);
+  font-weight: 700; letter-spacing: .07em; color: var(--ink);
 }
-.patch__title span { color: var(--vermilion); }
 .patch__title::after {
   content: ""; flex: 1; height: 1px; background: var(--border);
   transform: scaleX(0); transform-origin: left;
@@ -298,13 +313,12 @@ a { color: inherit; }
   transform: scaleX(1);
   transition: transform .8s var(--spring-smooth) .3s;
 }
-.patch__title--invert { color: color-mix(in srgb, var(--on-field) 62%, transparent); }
-.patch__title--invert span { color: var(--on-field); }
+.patch__title--invert { color: var(--on-field); }
 .patch__title--invert::after { background: color-mix(in srgb, var(--on-field) 24%, transparent); }
 
 .patch--label {
-  display: flex; align-items: center; gap: 20px;
-  padding-block: clamp(14px, 1.8vw, 20px);
+  display: flex; align-items: baseline; gap: 20px;
+  padding-block: clamp(18px, 2.2vw, 26px);
   background: var(--surface-2);
 }
 .patch--label .patch__title { margin: 0; flex: 1; }
@@ -348,9 +362,10 @@ a { color: inherit; }
 .patch--feature { background: var(--surface); }
 
 .work__head { margin-bottom: clamp(20px, 2.4vw, 30px); }
-.work__index {
-  margin: 0 0 10px; font-family: var(--mono); font-size: 11px;
-  letter-spacing: .16em; color: var(--vermilion);
+.work__head--icon { display: flex; align-items: flex-start; gap: clamp(16px, 2vw, 26px); }
+.work__mark {
+  flex: 0 0 auto; width: clamp(56px, 7vw, 84px); height: auto;
+  border-radius: 22%; display: block;
 }
 .work__name {
   margin: 0 0 .35em; font-family: var(--display); font-weight: 700;
@@ -386,10 +401,31 @@ a { color: inherit; }
   transition: clip-path .95s var(--spring-smooth) .48s;
 }
 .js .patch.sewn .shot:nth-child(2) { transition-delay: .62s; }
-.js .shot img { transform: scale(1.035); }
-.js .patch.sewn .shot img {
-  transform: none;
-  transition: transform 1.15s var(--spring-smooth) .48s;
+
+
+.shots--phone { grid-template-columns: repeat(3, minmax(0, 272px)); justify-content: start; gap: clamp(10px, 1.6vw, 20px); }
+.shot--phone { background: var(--surface-2); border-color: var(--border); }
+.shot--phone img { object-fit: contain; object-position: center; }
+.shots--phone figcaption { grid-column: 1 / -1; }
+@media (max-width: 620px) {
+  .shots--phone { grid-template-columns: 1fr; }
+  .shots--phone { grid-template-columns: minmax(0, 300px); }
+}
+
+/* 対応する環境だけ。transform しか動かさないので描画のやり直しが起きない */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .shot:not(.shot--phone) img {
+      animation: shot-drift linear both;
+      animation-timeline: view();
+      animation-range: entry 15% exit 85%;
+      will-change: transform;
+    }
+    @keyframes shot-drift {
+      from { transform: translateY(-2.2%) scale(1.045); }
+      to   { transform: translateY(2.2%)  scale(1.045); }
+    }
+  }
 }
 
 .shots figcaption {
@@ -416,14 +452,6 @@ a { color: inherit; }
   font-size: 1.15rem; letter-spacing: .01em; font-variant-numeric: tabular-nums;
 }
 .metrics dd span { font-size: .68em; margin-left: 2px; color: var(--ink-3); }
-
-/* アプリの印 */
-.patch--appmark {
-  background: var(--surface-2);
-  display: flex; align-items: center; justify-content: center;
-  min-height: 160px; padding: clamp(28px, 4vw, 56px);
-}
-.patch--appmark img { width: clamp(110px, 56%, 190px); height: auto; border-radius: 22%; display: block; }
 
 /* ── 10. 実績・資格 ──────────────────────────────────── */
 
@@ -483,7 +511,7 @@ a { color: inherit; }
   /* 実績の行。Aegis の表と同じで、目で追っている行が分かる */
   .record__item:hover { background: var(--surface-2); }
   /* 画面写真は近寄って見られる */
-  .shot:hover img { transform: scale(1.02); }
+  .shot--phone:hover img { transform: scale(1.025); }
 }
 
 /* 押した手応え */
@@ -509,7 +537,6 @@ a { color: inherit; }
   margin: auto 0 0; padding-top: clamp(24px, 3vw, 36px);
   font-family: var(--mono); font-size: 10px; letter-spacing: .1em; color: var(--ink-3);
 }
-.colophon__built { margin-left: auto; }
 
 /* ── 12. 床とハムスター ──────────────────────────────── */
 /* ハムスターは床の上を歩く。本文の上には決して乗らない */
@@ -527,11 +554,14 @@ a { color: inherit; }
   font-family: var(--mono); font-size: 10px; letter-spacing: .12em; color: var(--ink-2);
 }
 
+/* 定位置のマスコット。左右には動かず、その場で走り、毛づくろいし、眠る */
 .hamster {
-  position: absolute; left: 0; bottom: 0;
-  width: 48px; height: 40px; padding: 12px 4px 0;
+  position: absolute; bottom: 0;
+  left: clamp(12px, 2.2vw, 26px);
+  width: 48px; height: 44px; padding: 16px 4px 0;
   cursor: pointer; background: none; border: 0;
   will-change: transform;
+  transition: transform .12s var(--ease-snap);
 }
 .hamster canvas { display: block; width: 40px; height: 28px; image-rendering: pixelated; }
 
@@ -550,4 +580,7 @@ a { color: inherit; }
   .js .shot img, .js .patch.sewn .shot img { transform: none; transition: none; }
   .record__item, .shot img { transition: none; }
   .links a:active, .masthead__nav a:active, .masthead__name:active { transform: none; }
+  .hamster { transition: none; }
+  .js .stagger > *, .js .patch.sewn .stagger > * { opacity: 1; transform: none; transition: none; }
+  .shot img { animation: none !important; }
 }
