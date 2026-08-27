@@ -50,8 +50,8 @@ if (mark) {
   MARK_COLORS.forEach((c, i) => {
     const cell = document.createElement('i');
     cell.style.setProperty('--c', c);
-    cell.style.setProperty('--dx', rand(48).toFixed(1) + 'px');
-    cell.style.setProperty('--dy', rand(48).toFixed(1) + 'px');
+    cell.style.setProperty('--dx', rand(34).toFixed(1) + 'px');
+    cell.style.setProperty('--dy', rand(34).toFixed(1) + 'px');
     cell.style.setProperty('--r', rand(24).toFixed(1) + 'deg');
     cell.style.setProperty('--d', (0.2 + i * 0.045).toFixed(3) + 's');
     mark.appendChild(cell);

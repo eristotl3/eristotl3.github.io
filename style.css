@@ -263,6 +263,7 @@ a { color: inherit; }
   display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px;
   width: clamp(96px, 13vw, 152px); aspect-ratio: 1;
   align-self: center;
+  overflow: clip;              /* 組み上がる前の布片を枠の外に出さない */
 }
 .hero__mark i { display: block; background: var(--c, var(--border)); }
 .js .hero__mark i {
@@ -465,6 +466,7 @@ a { color: inherit; }
   display: flex; align-items: center; gap: 12px;
   min-height: 50px; padding: 10px 12px; margin: 0 -12px;
   text-decoration: none; position: relative;
+  isolation: isolate;          /* これが無いと ::before(z-index:-1) が背景の下に潜る */
   transition: color .28s var(--ease-snap);
 }
 .links a::before {

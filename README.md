@@ -60,6 +60,21 @@ git push -u origin main
 書体は3系統で使い分けています。見出し＝明朝（Shippori Mincho）、本文＝OS標準のゴシック、
 数字と符号＝等幅（JetBrains Mono）。数字を等幅にしているのが、素人っぽさを消す一番効く部分です。
 
+## CSS や JS を直したら（重要）
+
+`index.html` は `style.css?v=2` `main.js?v=2` の形で読み込んでいます。
+**中身を書き換えたら、この数字を必ず上げてください。**
+
+```bash
+sed -i '' 's/?v=2/?v=3/g' index.html
+```
+
+上げ忘れると、ブラウザが古い CSS を使い続けます。HTML だけ新しくて CSS が古い状態になるので、
+レイアウトが半分だけ崩れた、原因の分かりにくい壊れ方をします。一度これで詰まりました。
+
+GitHub Pages 自体も HTML を10分ほどキャッシュします。push 直後に古いままなら、少し待つか
+`Cmd+Shift+R`（強制再読み込み）で確認してください。
+
 ## 色を変える
 
 `style.css` 先頭の `:root` と、その下の `@media (prefers-color-scheme: dark)` の2箇所。

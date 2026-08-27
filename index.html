@@ -16,7 +16,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script>/* main.js が読めなかった場合に本文が消えたままにならないよう、3秒で保険を外す */
 var d=document.documentElement;d.className+=" js";setTimeout(function(){if(!d.dataset.sewInit)d.className=d.className.replace(" js","");},3000);</script>
-<link rel="stylesheet" href="style.css">
+<!-- 更新したら v= の数字を上げること。古い CSS がキャッシュされたままになるのを防ぐ -->
+<link rel="stylesheet" href="style.css?v=2">
 </head>
 <body>
 <a class="skip-link" href="#main">本文へスキップ</a>
@@ -46,7 +47,7 @@ var d=document.documentElement;d.className+=" js";setTimeout(function(){if(!d.da
 
   <!-- ============ 私について ============ -->
   <section class="patch patch--about" id="about" aria-labelledby="about-h">
-    <p class="patch__title" id="about-h"><span>01</span>私について</p>
+    <h2 class="patch__title" id="about-h"><span>01</span>私について</h2>
     <div class="prose">
       <p>高校ではプログラミング同好会で部長を務め、5人で毎週の勉強会を運営していました。文化祭に向けて Unity で学校をテーマにしたゲームを作り、当日は来場者に実際に遊んでもらいました。</p>
       <p>今は、AI がどういう仕組みで動いているのかを学びながら、それを実際に使える製品の形にすることに関心があります。個人開発では、自分が困っていたことを解決するものを作り、きちんと動くところまで持っていくことを大切にしています。エンタープライズの水準で通用する実装力を身につけて、作ったものを積み上げていきたいと考えています。</p>
@@ -55,7 +56,7 @@ var d=document.documentElement;d.className+=" js";setTimeout(function(){if(!d.da
 
   <!-- ============ 実績の要約（色面のパッチ） ============ -->
   <aside class="patch patch--figures" aria-labelledby="figures-h">
-    <p class="patch__title patch__title--invert" id="figures-h"><span>02</span>要約</p>
+    <h2 class="patch__title patch__title--invert" id="figures-h"><span>02</span>要約</h2>
     <dl class="figures">
       <div class="figure"><dt>実用英語技能検定</dt><dd>1級</dd></div>
       <div class="figure"><dt>TOEFL iBT</dt><dd>100</dd></div>
@@ -67,7 +68,7 @@ var d=document.documentElement;d.className+=" js";setTimeout(function(){if(!d.da
 
   <!-- ============ 制作物 ============ -->
   <div class="patch patch--label" id="works">
-    <p class="patch__title"><span>03</span>制作物</p>
+    <h2 class="patch__title"><span>03</span>制作物</h2>
     <p class="patch__aside">個人開発<span class="dot"></span>2件</p>
   </div>
 
@@ -124,7 +125,7 @@ var d=document.documentElement;d.className+=" js";setTimeout(function(){if(!d.da
 
   <!-- ============ 実績・資格 ============ -->
   <section class="patch patch--record" id="record" aria-labelledby="record-h">
-    <p class="patch__title" id="record-h"><span>04</span>実績・資格</p>
+    <h2 class="patch__title" id="record-h"><span>04</span>実績・資格</h2>
 
     <h3 class="record__group">語学</h3>
     <ul class="record">
@@ -178,7 +179,7 @@ var d=document.documentElement;d.className+=" js";setTimeout(function(){if(!d.da
 
   <!-- ============ リンク ============ -->
   <footer class="patch patch--links" id="links" aria-labelledby="links-h">
-    <p class="patch__title" id="links-h"><span>05</span>リンク</p>
+    <h2 class="patch__title" id="links-h"><span>05</span>リンク</h2>
     <ul class="links">
       <li><a href="https://github.com/eristotl3" rel="me noopener" aria-label="GitHub（eristotl3）">
         <svg class="links__icon" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
@@ -205,6 +206,6 @@ var d=document.documentElement;d.className+=" js";setTimeout(function(){if(!d.da
   </div>
 </div>
 
-<script src="main.js" defer></script>
+<script src="main.js?v=2" defer></script>
 </body>
 </html>
