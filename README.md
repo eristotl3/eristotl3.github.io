@@ -24,6 +24,20 @@ git push -u origin main
 
 その後 GitHub の Settings → Pages で Source を `main` / `/ (root)` に設定します。反映まで1〜2分。
 
+## 口座ノートのスクリーンショットを入れる（未配置）
+
+`index.html` は次の3ファイルを参照していますが、まだ置かれていません。置けばそのまま表示されます。
+
+| 置くファイル | 画面 |
+|---|---|
+| `assets/kouza-home.png` | 概要（残高と今月のまとめ） |
+| `assets/kouza-list.png` | 入出金（明細の一覧） |
+| `assets/kouza-analysis.png` | 分析（カテゴリ別の内訳） |
+
+枠の比率は `1080 / 2340` を想定しています。実寸が違う場合は `sips -g pixelWidth -g pixelHeight assets/kouza-*.png`
+で調べて `index.html` の `--ratio` を直してください。`object-fit: contain` なので、多少ずれても
+枠の地の色に溶けるだけで崩れはしません。
+
 ## Aegis のスクリーンショットを差し替える
 
 `assets/aegis-markets.png`（2880×1558）と `assets/aegis-portfolio.png`（2874×1556）を表示しています。
@@ -62,11 +76,11 @@ git push -u origin main
 
 ## CSS や JS を直したら（重要）
 
-`index.html` は `style.css?v=2` `main.js?v=2` の形で読み込んでいます。
+`index.html` は `style.css?v=3` `main.js?v=3` の形で読み込んでいます。
 **中身を書き換えたら、この数字を必ず上げてください。**
 
 ```bash
-sed -i '' 's/?v=2/?v=3/g' index.html
+sed -i '' 's/?v=3/?v=4/g' index.html
 ```
 
 上げ忘れると、ブラウザが古い CSS を使い続けます。HTML だけ新しくて CSS が古い状態になるので、
