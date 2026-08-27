@@ -36,6 +36,28 @@ if (!('IntersectionObserver' in window)) {
 
 document.getElementById('year').textContent = new Date().getFullYear();
 
+/* ---------- 1b. 3×3 の継ぎ接ぎの印 ---------- */
+/* 布片が散らばった状態から一度だけ組み上がる。組み上がったら動かない。 */
+
+const MARK_COLORS = [
+  'var(--field)', 'var(--surface-2)', 'var(--vermilion)',
+  'var(--border)', 'var(--field)',    'var(--border)',
+  'var(--vermilion)', 'var(--surface-2)', 'var(--field)',
+];
+const mark = document.getElementById('mark');
+if (mark) {
+  const rand = (n) => (Math.random() * 2 - 1) * n;
+  MARK_COLORS.forEach((c, i) => {
+    const cell = document.createElement('i');
+    cell.style.setProperty('--c', c);
+    cell.style.setProperty('--dx', rand(48).toFixed(1) + 'px');
+    cell.style.setProperty('--dy', rand(48).toFixed(1) + 'px');
+    cell.style.setProperty('--r', rand(24).toFixed(1) + 'deg');
+    cell.style.setProperty('--d', (0.2 + i * 0.045).toFixed(3) + 's');
+    mark.appendChild(cell);
+  });
+}
+
 /* ---------- 2. ハムスター ---------- */
 
 const SCALE = 2;                 // 20x14 のドット絵を 40x28 に拡大
@@ -117,11 +139,18 @@ let raf = null;
 let breathe = null;
 let idleTimer = null, sleepTimer = null, groomTimer = null;
 
-const limit = () => Math.max(MARGIN, window.innerWidth - WIDTH - MARGIN);
+// 右端は床の表示（URL）の手前まで。ハムスターは文字の上に乗らない
+const floorLabel = document.querySelector('.floor__label');
+
+const limit = () => {
+  const wall = floorLabel ? floorLabel.getBoundingClientRect().left : window.innerWidth;
+  return Math.max(MARGIN, wall - WIDTH - 10);
+};
 
 function place(bob = 0) {
   el.style.transform = `translateX(${x}px) scaleX(${dir}) translateY(${-bob}px)`;
 }
+
 
 function stopLoop() { if (raf) { cancelAnimationFrame(raf); raf = null; } last = 0; acc = 0; }
 function stopBreathing() { if (breathe) { clearInterval(breathe); breathe = null; } }

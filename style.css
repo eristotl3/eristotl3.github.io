@@ -1,350 +1,551 @@
 /* ============================================================
    岩田真幸 — portfolio
-   継ぎ接ぎ（パッチワーク）を骨格にしたグリッド。
-   パッチ同士の 2px の隙間がそのまま「縫い目」になる。
+   骨格：조각보（継ぎ接ぎ布）。布片ごとに地の色と丈が違い、
+   3px の隙間がそのまま縫い目になる。
+   書体は3系統。明朝＝見出し、ゴシック＝本文、等幅＝数字と符号。
    ============================================================ */
 
+/* ── 1. トークン ─────────────────────────────────────── */
+
 :root {
-  --kinari:       #e5dece;
-  --surface:      #faf7f0;
-  --kinari-deep:  #d8cfba;
-  --ink:          #1c1a17;
-  --ink-soft:     #5a554c;
-  --indigo:       #1e3a5f;
-  --indigo-soft:  #4a6a94;
-  --vermilion:    #c1452b;
-  --thread:       #b9b1a0;
-  --border:       #ddd6c7;
+  /* 布と地 */
+  --kinari:      #e3dccb;   /* 地。パッチの隙間に見える色 */
+  --surface:     #faf7f0;   /* 布その一 */
+  --surface-2:   #f2ece0;   /* 布その二 */
+  --field:       #1e3a5f;   /* 色面のパッチ */
+  --on-field:    #f6f2e8;
+  --shot-bg:     #0b0d10;   /* スクリーンショットの下地 */
 
-  --font-display: "Shippori Mincho", "Hiragino Mincho ProN", "Yu Mincho", YuMincho, serif;
-  --font-body: -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN",
-               "Hiragino Sans", "Yu Gothic", YuGothic, "Noto Sans JP",
-               "Helvetica Neue", Arial, sans-serif;
+  /* 墨 */
+  --ink:         #1b1916;
+  --ink-2:       #57524a;
+  --ink-3:       #6d675b;
 
-  --step: clamp(20px, 3vw, 40px);
-  --ease: cubic-bezier(.2, .7, .3, 1);
+  /* 差し色 */
+  --indigo:      #1e3a5f;
+  --vermilion:   #b8402a;
+
+  /* 線 */
+  --border:      #ddd5c3;
+  --hairline:    #e8e1d2;
+  --thread:      #b3aa96;
+
+  /* 書体 */
+  --display: "Shippori Mincho", "Hiragino Mincho ProN", "Yu Mincho", YuMincho, serif;
+  --body: -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN",
+          "Hiragino Sans", "Yu Gothic", YuGothic, "Noto Sans JP",
+          "Helvetica Neue", Arial, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* 寸法 */
+  --pad:      clamp(22px, 3.2vw, 46px);
+  --seam:     3px;
+  --masthead: 54px;
+  --floor:    42px;
+  --maxw:     1180px;
+
+  /* 加速度。この3本以外は使わない。
+     --spring-*  = 入場と状態変化（布が落ち着く動き）
+     --ease-snap = ホバーの手応え（跳ね返りは邪魔になる） */
+  --spring-snappy: cubic-bezier(.16, 1, .3, 1);
+  --spring-smooth: cubic-bezier(.16, 1, .3, 1);
+  --ease-snap:     cubic-bezier(.22, 1, .36, 1);
+}
+
+/* linear() が使える環境だけ、本物のばねに差し替える */
+@supports (animation-timing-function: linear(0, 1)) {
+  :root {
+    --spring-snappy: linear(
+      0, .009, .035 2.1%, .141 4.4%, .723 12.9%, .938 16.7%, 1.017 19.4%,
+      1.067 22.5%, 1.089 26%, 1.079 30.3%, 1.049 36%, 1.024 42.6%,
+      1.011 50.3%, 1.004 59.2%, 1.001 69.3%, 1
+    );
+    --spring-smooth: linear(
+      0, .004, .016 2.3%, .063 4.7%, .141 7.2%, .25 9.9%, .601 16.5%,
+      .815 21%, .929 25.2%, .987 29%, 1.025 33.5%, 1.042 38%, 1.04 43.5%,
+      1.027 50%, 1.013 57.5%, 1.005 67%, 1.001 79%, 1
+    );
+  }
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --kinari:      #0c0b07;
-    --surface:     #24211a;
-    --kinari-deep: #35301f;
-    --ink:         #ece7db;
-    --ink-soft:    #a29b8b;
-    --indigo:      #8fb2dd;
-    --indigo-soft: #5d7fa8;
-    --vermilion:   #e8794f;
-    --thread:      #5a5342;
-    --border:      #413b31;
+    --kinari:    #0a0906;
+    --surface:   #23201a;
+    --surface-2: #1b1913;
+    --field:     #1a3355;
+    --on-field:  #eef1f6;
+
+    --ink:       #ece7db;
+    --ink-2:     #a49d8d;
+    --ink-3:     #948c7c;
+
+    --indigo:    #8fb2dd;
+    --vermilion: #e07a55;
+
+    --border:    #3d372d;
+    --hairline:  #302b23;
+    --thread:    #575040;
   }
 }
 
 *, *::before, *::after { box-sizing: border-box; }
-
-html { -webkit-text-size-adjust: 100%; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
 
 body {
   margin: 0;
+  padding-top: var(--masthead);
+  padding-bottom: var(--floor);
   background: var(--kinari);
   color: var(--ink);
-  font-family: var(--font-body);
+  font-family: var(--body);
   font-size: 16px;
-  line-height: 1.85;
+  line-height: 1.9;
   font-feature-settings: "palt" 1;
   -webkit-font-smoothing: antialiased;
 }
 
-::selection { background: var(--vermilion); color: #fff; }
-
-a { color: inherit; }
-
-:focus-visible {
-  outline: 2px solid var(--vermilion);
-  outline-offset: 3px;
+/* 紙の粒。見えないが、平坦さは消える */
+body::after {
+  content: "";
+  position: fixed; inset: 0;
+  pointer-events: none; z-index: 300;
+  opacity: .028;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
+::selection { background: var(--vermilion); color: #fff; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--vermilion); outline-offset: 3px; }
+
 .skip-link {
-  position: absolute; left: -9999px; top: 0;
-  background: var(--ink); color: var(--kinari);
-  padding: 12px 20px; z-index: 100;
+  position: absolute; left: -9999px; top: 0; z-index: 400;
+  background: var(--ink); color: var(--kinari); padding: 12px 20px;
 }
 .skip-link:focus { left: 0; }
 
-/* ---------- 継ぎ接ぎのグリッド ---------- */
+.rule { display: inline-block; width: 22px; height: 1px; background: currentColor; opacity: .45; margin: 0 10px; vertical-align: middle; }
+.dot::before { content: "・"; opacity: .5; }
+
+/* ── 2. 見出し帯 ─────────────────────────────────────── */
+
+.masthead {
+  position: fixed; inset: 0 0 auto; z-index: 200;
+  height: var(--masthead);
+  display: flex; align-items: center; gap: 24px;
+  padding: 0 clamp(14px, 2.5vw, 30px);
+  background: color-mix(in srgb, var(--kinari) 82%, transparent);
+  backdrop-filter: blur(14px) saturate(150%);
+  -webkit-backdrop-filter: blur(14px) saturate(150%);
+  border-bottom: 1px solid var(--border);
+}
+@supports not (backdrop-filter: blur(1px)) { .masthead { background: var(--kinari); } }
+
+.masthead__name {
+  font-family: var(--display); font-weight: 700;
+  font-size: 15px; letter-spacing: .12em; text-decoration: none;
+}
+.masthead__nav { margin-left: auto; display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
+.masthead__nav::-webkit-scrollbar { display: none; }
+.masthead__nav a {
+  position: relative; white-space: nowrap; text-decoration: none;
+  display: flex; align-items: center; min-height: 44px;   /* タップ領域 */
+  font-size: 12.5px; letter-spacing: .06em; color: var(--ink-2);
+  padding: 0 10px; transition: color .3s var(--ease-snap);
+}
+@media (hover: hover) and (pointer: fine) {
+  .masthead__nav a:hover { color: var(--ink); }
+}
+.masthead__nav a::after {
+  content: ""; position: absolute; left: 10px; right: 10px; bottom: 9px; height: 1px;
+  background: var(--vermilion); transform: scaleX(0); transform-origin: right;
+  transition: transform .32s var(--ease-snap);
+}
+@media (hover: hover) and (pointer: fine) {
+  .masthead__nav a:hover::after { transform: scaleX(1); transform-origin: left; }
+}
+
+/* ── 3. 継ぎ接ぎのグリッド ───────────────────────────── */
 
 .quilt {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
-  gap: 3px;
-  max-width: 1180px;
+  gap: var(--seam);
+  max-width: var(--maxw);
   margin: 0 auto;
-  padding: clamp(10px, 2.5vw, 28px);
+  padding: clamp(10px, 2vw, 22px);
 }
 
 .patch {
   position: relative;
   grid-column: 1 / -1;
   background: var(--surface);
-  padding: var(--step);
-  overflow: hidden;
+  padding: var(--pad);
+  scroll-margin-top: calc(var(--masthead) + 14px);
 }
 
-/* 縫い目。上辺と左辺に走らせる */
-.patch::before,
-.patch::after {
-  content: "";
-  position: absolute;
-  background-repeat: repeat;
-  pointer-events: none;
-}
+/* 縫い目。上辺と左辺に走る */
+.patch::before, .patch::after { content: ""; position: absolute; pointer-events: none; }
 .patch::before {
-  left: 10px; right: 10px; top: 10px; height: 1.5px;
+  left: 12px; right: 12px; top: 11px; height: 1.5px;
   background-image: repeating-linear-gradient(90deg, var(--thread) 0 5px, transparent 5px 11px);
   transform: scaleX(0); transform-origin: left center;
 }
 .patch::after {
-  top: 10px; bottom: 10px; left: 10px; width: 1.5px;
+  top: 11px; bottom: 12px; left: 11px; width: 1.5px;
   background-image: repeating-linear-gradient(180deg, var(--thread) 0 5px, transparent 5px 11px);
   transform: scaleY(0); transform-origin: center top;
 }
 
-@media (min-width: 900px) {
+@media (min-width: 940px) {
   .patch--about   { grid-column: 1 / 9;  }
-  .patch--motif   { grid-column: 9 / 13; }
-  .patch--work-a  { grid-column: 1 / 8;  }
-  .patch--work-b  { grid-column: 8 / 13; }
+  .patch--figures { grid-column: 9 / 13; }
+  .patch--work    { grid-column: 1 / 9;  }
+  .patch--appmark { grid-column: 9 / 13; }
   .patch--record  { grid-column: 1 / 9;  }
   .patch--links   { grid-column: 9 / 13; }
 }
 
-/* ---------- 縫合アニメーション（各パッチ一度きり） ---------- */
+/* ── 4. 縫合（各パッチ一度きり） ─────────────────────── */
 
-.js .patch::before { transition: transform .5s var(--ease); }
-.js .patch::after  { transition: transform .5s var(--ease) .1s; }
-.js .patch > *     { opacity: 0; transform: translateY(10px); }
+.js .patch::before { transition: transform .55s var(--spring-snappy); }
+.js .patch::after  { transition: transform .55s var(--spring-snappy) .08s; }
+.js .patch > *     { opacity: 0; transform: translateY(14px); filter: blur(4px); }
 .js .patch.sewn > * {
-  opacity: 1; transform: none;
-  transition: opacity .5s ease-out, transform .5s var(--ease);
+  opacity: 1; transform: none; filter: none;
+  transition: opacity .62s var(--spring-snappy), transform .62s var(--spring-snappy), filter .62s var(--spring-snappy);
 }
 .js .patch.sewn::before { transform: scaleX(1); }
 .js .patch.sewn::after  { transform: scaleY(1); }
 
-.js .patch.sewn > *:nth-child(1) { transition-delay: .16s; }
-.js .patch.sewn > *:nth-child(2) { transition-delay: .22s; }
+.js .patch.sewn > *:nth-child(1) { transition-delay: .14s; }
+.js .patch.sewn > *:nth-child(2) { transition-delay: .21s; }
 .js .patch.sewn > *:nth-child(3) { transition-delay: .28s; }
-.js .patch.sewn > *:nth-child(4) { transition-delay: .34s; }
-.js .patch.sewn > *:nth-child(5) { transition-delay: .40s; }
-.js .patch.sewn > *:nth-child(n+6) { transition-delay: .46s; }
+.js .patch.sewn > *:nth-child(4) { transition-delay: .35s; }
+.js .patch.sewn > *:nth-child(5) { transition-delay: .42s; }
+.js .patch.sewn > *:nth-child(n+6) { transition-delay: .49s; }
 
-/* ---------- 表題 ---------- */
+/* ── 5. 表題 ─────────────────────────────────────────── */
 
 .patch--hero {
-  min-height: clamp(340px, 56vh, 540px);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: clamp(14px, 2vw, 22px);
-  padding-block: clamp(40px, 6vw, 72px);
+  min-height: clamp(360px, 62vh, 580px);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center; gap: var(--pad);
+  padding-block: clamp(44px, 7vw, 84px);
+  background: var(--surface);
 }
+.hero__body { display: flex; flex-direction: column; gap: clamp(14px, 1.8vw, 22px); }
 
 .hero__eyebrow {
-  margin: 0;
-  font-size: .72rem;
-  letter-spacing: .34em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
+  margin: 0; display: flex; align-items: center;
+  font-family: var(--mono); font-size: 11px; font-weight: 500;
+  letter-spacing: .22em; color: var(--ink-3);
 }
-
 .hero__name {
-  margin: 0;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: clamp(3rem, 11vw, 6.5rem);
-  line-height: 1.06;
-  letter-spacing: .04em;
+  margin: 0; font-family: var(--display); font-weight: 700;
+  font-size: clamp(2.9rem, 9.5vw, 6rem);
+  line-height: 1.02; letter-spacing: .02em;
 }
-.hero__gap { display: inline-block; width: .3em; }
-
+.hero__gap { display: inline-block; width: .28em; }
 .hero__lead {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: clamp(1.05rem, 2.6vw, 1.6rem);
-  line-height: 1.9;
+  margin: 0; font-family: var(--display);
+  font-size: clamp(1.02rem, 2.3vw, 1.5rem); line-height: 1.95;
   color: var(--indigo);
 }
-
 .hero__meta {
-  margin: 0;
-  font-size: .9rem;
-  letter-spacing: .12em;
-  color: var(--ink-soft);
+  margin: 0; font-family: var(--mono);
+  font-size: 11.5px; letter-spacing: .12em; color: var(--ink-3);
 }
 
-.hero__swatch { display: flex; gap: 2px; margin-top: auto; }
-.hero__swatch span { display: block; height: 10px; flex: 1; background: var(--c); }
+/* 3×3 の継ぎ接ぎの印。読み始める前に組み上がって、以後動かない */
+.hero__mark {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px;
+  width: clamp(96px, 13vw, 152px); aspect-ratio: 1;
+  align-self: center;
+}
+.hero__mark i { display: block; background: var(--c, var(--border)); }
+.js .hero__mark i {
+  opacity: 0;
+  transform: translate(var(--dx), var(--dy)) rotate(var(--r)) scale(.4);
+}
+.js .patch.sewn .hero__mark i {
+  opacity: 1; transform: none;
+  transition: opacity .5s var(--spring-snappy) var(--d), transform .74s var(--ease-snap) var(--d);
+}
+@media (max-width: 700px) {
+  /* 縦積みでは最小高さを外す。余った丈が空白として残ると、
+     読み手は本文に着く前に一画面分スクロールすることになる */
+  .patch--hero { grid-template-columns: 1fr; min-height: auto; gap: 30px; }
+  .hero__mark { justify-self: start; width: clamp(84px, 24vw, 108px); }
+}
 
-/* ---------- 見出し ---------- */
+/* ── 6. 見出し ───────────────────────────────────────── */
 
 .patch__title {
-  margin: 0 0 1.4em;
-  font-family: var(--font-display);
-  font-size: 1.05rem;
-  font-weight: 500;
-  letter-spacing: .3em;
-  color: var(--ink-soft);
+  display: flex; align-items: center; gap: 12px;
+  margin: 0 0 clamp(20px, 2.4vw, 32px);
+  font-family: var(--mono); font-size: 11px; font-weight: 500;
+  letter-spacing: .16em; color: var(--ink-3);
 }
-.patch--label { padding-block: clamp(14px, 2vw, 22px); }
-.patch--label .patch__title { margin: 0; }
+.patch__title span { color: var(--vermilion); }
+.patch__title::after {
+  content: ""; flex: 1; height: 1px; background: var(--border);
+  transform: scaleX(0); transform-origin: left;
+}
+.js .patch.sewn .patch__title::after {
+  transform: scaleX(1);
+  transition: transform .8s var(--spring-smooth) .3s;
+}
+.patch__title--invert { color: color-mix(in srgb, var(--on-field) 62%, transparent); }
+.patch__title--invert span { color: var(--on-field); }
+.patch__title--invert::after { background: color-mix(in srgb, var(--on-field) 24%, transparent); }
 
-/* ---------- 私について ---------- */
+.patch--label {
+  display: flex; align-items: center; gap: 20px;
+  padding-block: clamp(14px, 1.8vw, 20px);
+  background: var(--surface-2);
+}
+.patch--label .patch__title { margin: 0; flex: 1; }
+.patch__aside {
+  margin: 0; font-family: var(--mono); font-size: 11px;
+  letter-spacing: .1em; color: var(--ink-3); white-space: nowrap;
+}
 
-.prose { margin: 0; max-width: 34em; }
-.prose p { margin: 0 0 1.5em; }
+/* ── 7. 本文 ─────────────────────────────────────────── */
+
+.prose { margin: 0; max-width: 33em; }
+.prose p { margin: 0 0 1.6em; }
 .prose p:last-child { margin-bottom: 0; }
 
-/* ---------- 装飾パッチ ---------- */
+/* ── 8. 要約（色面） ─────────────────────────────────── */
 
-.patch--motif { padding: 8px; min-height: 160px; }
-.motif {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  grid-template-rows: repeat(5, 1fr);
-  gap: 2px;
-  height: 100%;
-  min-height: 150px;
+.patch--figures { background: var(--field); color: var(--on-field); }
+.patch--figures::before,
+.patch--figures::after { background-image: repeating-linear-gradient(var(--dir, 90deg), color-mix(in srgb, var(--on-field) 34%, transparent) 0 5px, transparent 5px 11px); }
+.patch--figures::after { --dir: 180deg; }
+
+.figures { margin: 0; display: grid; gap: 0; }
+.figure {
+  display: flex; align-items: baseline; gap: 12px;
+  padding: 13px 0;
+  border-top: 1px solid color-mix(in srgb, var(--on-field) 16%, transparent);
 }
-.motif span { display: block; }
-.motif__a { grid-area: 1 / 1 / 3 / 4; background: var(--indigo); }
-.motif__b { grid-area: 1 / 4 / 3 / 6; background: var(--kinari-deep); }
-.motif__c { grid-area: 3 / 1 / 6 / 3; background: var(--indigo-soft); }
-.motif__d { grid-area: 3 / 3 / 5 / 6; background: var(--vermilion); }
-.motif__e { grid-area: 5 / 3 / 6 / 6; background: var(--kinari-deep); }
-
-@media (min-width: 900px) { .motif { min-height: 300px; } }
-
-/* ---------- 制作物 ---------- */
-
-.work__head { display: flex; gap: 18px; align-items: flex-start; margin-bottom: 1.3em; }
-.work__icon {
-  flex: 0 0 auto; width: 56px; height: 56px;
-  border-radius: 13px; display: block;
+.figure:last-child { border-bottom: 1px solid color-mix(in srgb, var(--on-field) 16%, transparent); }
+.figure dt {
+  font-size: 11.5px; letter-spacing: .04em;
+  color: color-mix(in srgb, var(--on-field) 66%, transparent);
 }
-.work__icon--drawn svg { display: block; width: 56px; height: 56px; }
-
-.work__name {
-  margin: 0 0 .35em;
-  font-family: var(--font-display);
-  font-size: 1.5rem; font-weight: 700; letter-spacing: .04em;
-}
-.work__tag { margin: 0; font-size: .92rem; line-height: 1.7; color: var(--ink-soft); }
-.work__body { margin: 0 0 1.5em; }
-
-.work__stack {
-  display: flex; flex-wrap: wrap; gap: 6px;
-  margin: 0 0 1.1em; padding: 0; list-style: none;
-}
-.work__stack li {
-  font-size: .74rem; letter-spacing: .08em;
-  padding: 3px 10px;
-  border: 1px solid var(--border);
-  color: var(--ink-soft);
-}
-
-.work__meta {
-  display: flex; flex-wrap: wrap; gap: 4px 18px;
-  margin: 0;
-  font-size: .78rem; letter-spacing: .04em; color: var(--ink-soft);
+.figure dd {
+  margin: 0 0 0 auto; font-family: var(--display); font-weight: 700;
+  font-size: 1.22rem; letter-spacing: .02em; white-space: nowrap;
   font-variant-numeric: tabular-nums;
 }
 
-/* ---------- 実績・資格 ---------- */
+/* ── 9. 制作物 ───────────────────────────────────────── */
+
+.patch--feature { background: var(--surface); }
+
+.work__head { margin-bottom: clamp(20px, 2.4vw, 30px); }
+.work__index {
+  margin: 0 0 10px; font-family: var(--mono); font-size: 11px;
+  letter-spacing: .16em; color: var(--vermilion);
+}
+.work__name {
+  margin: 0 0 .35em; font-family: var(--display); font-weight: 700;
+  font-size: clamp(1.6rem, 3.4vw, 2.4rem); line-height: 1.15; letter-spacing: .02em;
+}
+.work__tag { margin: 0; max-width: 40em; font-size: .95rem; line-height: 1.75; color: var(--ink-2); }
+.work__body { margin: 0 0 1.5em; max-width: 33em; }
+.work__body:last-of-type { margin-bottom: 0; }
+.work__cols { margin-bottom: clamp(20px, 2.4vw, 30px); }
+@media (min-width: 940px) {
+  .work__cols { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(24px, 3vw, 48px); }
+  .work__cols .work__body { margin-bottom: 0; }
+}
+
+/* スクリーンショット */
+.shots { margin: 0 0 clamp(22px, 2.6vw, 32px); display: grid; gap: var(--seam); }
+.shot {
+  aspect-ratio: var(--ratio, 16 / 9);
+  background: var(--shot-bg);
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
+}
+.shot img {
+  display: block; width: 100%; height: 100%;
+  transition: transform .6s var(--ease-snap);
+  object-fit: cover; object-position: center top;   /* 枠の比率で上から切る */
+  font-size: 12px; line-height: 1.7; color: #8fa0b4; padding: 16px;  /* 画像が無い間の alt 表示 */
+}
+/* この一枚だけが、このページで唯一の見せ場。布を広げるように上から開く */
+.js .shot { clip-path: inset(0 0 100% 0); }
+.js .patch.sewn .shot {
+  clip-path: inset(0 0 0 0);
+  transition: clip-path .95s var(--spring-smooth) .48s;
+}
+.js .patch.sewn .shot:nth-child(2) { transition-delay: .62s; }
+.js .shot img { transform: scale(1.035); }
+.js .patch.sewn .shot img {
+  transform: none;
+  transition: transform 1.15s var(--spring-smooth) .48s;
+}
+
+.shots figcaption {
+  margin-top: 12px; font-family: var(--mono); font-size: 10.5px;
+  letter-spacing: .08em; color: var(--ink-3);
+}
+
+/* 技術スタック */
+.stack { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 clamp(18px, 2vw, 24px); padding: 0; list-style: none; }
+.stack li {
+  font-family: var(--mono); font-size: 10.5px; letter-spacing: .06em;
+  padding: 4px 10px; color: var(--ink-2);
+  border: 1px solid var(--border);
+}
+
+/* 数値 */
+.metrics { display: flex; flex-wrap: wrap; gap: 0 clamp(28px, 4vw, 56px); margin: 0; }
+.metrics div { display: flex; flex-direction: column; gap: 3px; }
+.metrics dt {
+  font-family: var(--mono); font-size: 10px; letter-spacing: .14em; color: var(--ink-3);
+}
+.metrics dd {
+  margin: 0; font-family: var(--mono); font-weight: 500;
+  font-size: 1.15rem; letter-spacing: .01em; font-variant-numeric: tabular-nums;
+}
+.metrics dd span { font-size: .68em; margin-left: 2px; color: var(--ink-3); }
+
+/* アプリの印 */
+.patch--appmark {
+  background: var(--surface-2);
+  display: flex; align-items: center; justify-content: center;
+  min-height: 160px; padding: clamp(28px, 4vw, 56px);
+}
+.patch--appmark img { width: clamp(110px, 56%, 190px); height: auto; border-radius: 22%; display: block; }
+
+/* ── 10. 実績・資格 ──────────────────────────────────── */
 
 .record__group {
-  margin: 2.4em 0 .9em;
-  font-size: .82rem; font-weight: 600; letter-spacing: .22em;
-  color: var(--vermilion);
+  margin: clamp(28px, 3vw, 40px) 0 4px;
+  font-family: var(--mono); font-size: 10.5px; font-weight: 500;
+  letter-spacing: .2em; color: var(--vermilion);
 }
 .record__group:first-of-type { margin-top: 0; }
 
 .record { margin: 0; padding: 0; list-style: none; }
 .record__item {
-  padding: 1em 0;
-  border-top: 1px solid var(--border);
+  padding: 15px 12px; margin: 0 -12px;
+  border-bottom: 1px solid var(--hairline);
+  transition: background-color .3s var(--ease-snap);
 }
-.record__item:last-child { border-bottom: 1px solid var(--border); }
+.record__item:first-child { border-top: 1px solid var(--hairline); }
 
 .record__date {
-  margin: 0 0 .2em;
-  font-size: .76rem; letter-spacing: .1em; color: var(--ink-soft);
-  font-variant-numeric: tabular-nums;
+  margin: 0 0 3px; font-family: var(--mono); font-size: 10.5px;
+  letter-spacing: .1em; color: var(--ink-3); font-variant-numeric: tabular-nums;
 }
-.record__name { margin: 0; font-size: 1rem; line-height: 1.6; }
+.record__name { margin: 0; font-size: 1rem; line-height: 1.65; }
 .record__name b {
-  font-family: var(--font-display);
-  font-weight: 700; color: var(--indigo);
-  margin-left: .2em;
+  font-family: var(--display); font-weight: 700;
+  color: var(--indigo); margin-left: .25em;
 }
-.record__note {
-  margin: .5em 0 0; max-width: 34em;
-  font-size: .86rem; line-height: 1.8; color: var(--ink-soft);
+.record__note { margin: .5em 0 0; max-width: 34em; font-size: .855rem; line-height: 1.85; color: var(--ink-2); }
+
+@media (min-width: 620px) {
+  .record__item { display: grid; grid-template-columns: 92px 1fr; column-gap: 20px; }
+  .record__date { grid-row: span 2; margin: 0; padding-top: .35em; }
 }
 
-/* ---------- リンク ---------- */
+/* ── 11. リンク ──────────────────────────────────────── */
 
-/* 実績パッチと同じ行なので縦に伸びる。余った丈の底に奥付を置く */
-.patch--links { display: flex; flex-direction: column; }
-.patch--links .patch__title { flex: 0 0 auto; }
-
+.patch--links { display: flex; flex-direction: column; background: var(--surface-2); }
 .links { margin: 0; padding: 0; list-style: none; }
-.links li + li { margin-top: 2px; }
 .links a {
   display: flex; align-items: center; gap: 12px;
-  min-height: 48px; padding: 10px 12px;
-  text-decoration: none;
-  background: transparent;
-  transition: background .18s ease-out, color .18s ease-out;
+  min-height: 50px; padding: 10px 12px; margin: 0 -12px;
+  text-decoration: none; position: relative;
+  transition: color .28s var(--ease-snap);
 }
-.links a:hover { background: var(--kinari-deep); color: var(--indigo); }
-.links__icon { flex: 0 0 auto; width: 19px; height: 19px; }
+.links a::before {
+  content: ""; position: absolute; inset: 0;
+  background: var(--surface);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform .38s var(--ease-snap);
+  z-index: -1;
+}
+@media (hover: hover) and (pointer: fine) {
+  .links a:hover { color: var(--indigo); }
+  .links a:hover::before { transform: scaleX(1); }
+  .links a:hover .links__arrow { transform: none; opacity: 1; }
+  /* 実績の行。Aegis の表と同じで、目で追っている行が分かる */
+  .record__item:hover { background: var(--surface-2); }
+  /* 画面写真は近寄って見られる */
+  .shot:hover img { transform: scale(1.02); }
+}
+
+/* 押した手応え */
+.links a:active, .masthead__nav a:active, .masthead__name:active {
+  transform: scale(.985);
+  transition: transform .16s var(--ease-snap);
+}
+.links li + li { border-top: 1px solid var(--hairline); }
+.links__icon { flex: 0 0 auto; width: 18px; height: 18px; }
+.links__label { font-size: .92rem; }
 .links__handle {
-  margin-left: auto;
-  font-size: .78rem; color: var(--ink-soft);
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  margin-left: auto; font-family: var(--mono); font-size: 10.5px;
+  color: var(--ink-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.links__arrow {
+  font-family: var(--mono); font-size: 11px; color: var(--ink-3);
+  transform: translate(-2px, 2px); opacity: 0;
+  transition: transform .3s var(--ease-snap), opacity .3s var(--ease-snap);
 }
 
 .colophon {
-  margin: 2.4em 0 0;
-  margin-top: auto;
-  padding-top: 1.2em;
-  border-top: 1px solid var(--border);
-  font-size: .74rem; letter-spacing: .08em; color: var(--ink-soft);
+  display: flex; flex-wrap: wrap; gap: 6px 16px;
+  margin: auto 0 0; padding-top: clamp(24px, 3vw, 36px);
+  font-family: var(--mono); font-size: 10px; letter-spacing: .1em; color: var(--ink-3);
 }
+.colophon__built { margin-left: auto; }
 
-/* ---------- ハムスター ---------- */
+/* ── 12. 床とハムスター ──────────────────────────────── */
+/* ハムスターは床の上を歩く。本文の上には決して乗らない */
+
+.floor {
+  position: fixed; inset: auto 0 0; z-index: 180;
+  height: var(--floor);
+  background: var(--kinari);
+  border-top: 1px solid var(--border);
+  display: flex; align-items: center;
+}
+.floor__label {
+  margin-left: auto; padding-right: clamp(14px, 2.5vw, 30px);
+  /* 床は --kinari（濃い地）の上なので、--ink-3 だと 4.11:1 まで落ちる */
+  font-family: var(--mono); font-size: 10px; letter-spacing: .12em; color: var(--ink-2);
+}
 
 .hamster {
-  position: fixed;
-  left: 0; bottom: 8px;
-  width: 48px; height: 46px;
-  padding: 18px 4px 0;          /* タップ領域を 44px 以上に広げる */
-  z-index: 40;
-  cursor: pointer;
-  background: none; border: 0; padding: 0;
+  position: absolute; left: 0; bottom: 0;
+  width: 48px; height: 40px; padding: 12px 4px 0;
+  cursor: pointer; background: none; border: 0;
   will-change: transform;
 }
-.hamster canvas {
-  display: block; width: 40px; height: 28px;
-  image-rendering: pixelated;
-  image-rendering: crisp-edges;
-}
+.hamster canvas { display: block; width: 40px; height: 28px; image-rendering: pixelated; }
 
-/* ---------- 動きを減らす設定 ---------- */
+/* ── 13. 動きを減らす設定 ────────────────────────────── */
 
 @media (prefers-reduced-motion: reduce) {
-  .js .patch > *,
-  .js .patch.sewn > * { opacity: 1; transform: none; transition: none; }
+  html { scroll-behavior: auto; }
+  .js .patch > *, .js .patch.sewn > * { opacity: 1; transform: none; filter: none; transition: none; }
   .js .patch::before { transform: scaleX(1); transition: none; }
   .js .patch::after  { transform: scaleY(1); transition: none; }
-  .links a { transition: none; }
+  .js .hero__mark i, .js .patch.sewn .hero__mark i { opacity: 1; transform: none; transition: none; }
+  .links a, .links a::before, .links__arrow, .masthead__nav a::after { transition: none; }
+  .js .patch.sewn .patch__title::after,
+  .patch__title::after { transform: scaleX(1); transition: none; }
+  .js .shot, .js .patch.sewn .shot { clip-path: none; transition: none; }
+  .js .shot img, .js .patch.sewn .shot img { transform: none; transition: none; }
+  .record__item, .shot img { transition: none; }
+  .links a:active, .masthead__nav a:active, .masthead__name:active { transform: none; }
 }
