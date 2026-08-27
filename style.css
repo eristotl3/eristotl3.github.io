@@ -1,0 +1,350 @@
+/* ============================================================
+   岩田真幸 — portfolio
+   継ぎ接ぎ（パッチワーク）を骨格にしたグリッド。
+   パッチ同士の 2px の隙間がそのまま「縫い目」になる。
+   ============================================================ */
+
+:root {
+  --kinari:       #e5dece;
+  --surface:      #faf7f0;
+  --kinari-deep:  #d8cfba;
+  --ink:          #1c1a17;
+  --ink-soft:     #5a554c;
+  --indigo:       #1e3a5f;
+  --indigo-soft:  #4a6a94;
+  --vermilion:    #c1452b;
+  --thread:       #b9b1a0;
+  --border:       #ddd6c7;
+
+  --font-display: "Shippori Mincho", "Hiragino Mincho ProN", "Yu Mincho", YuMincho, serif;
+  --font-body: -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN",
+               "Hiragino Sans", "Yu Gothic", YuGothic, "Noto Sans JP",
+               "Helvetica Neue", Arial, sans-serif;
+
+  --step: clamp(20px, 3vw, 40px);
+  --ease: cubic-bezier(.2, .7, .3, 1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --kinari:      #0c0b07;
+    --surface:     #24211a;
+    --kinari-deep: #35301f;
+    --ink:         #ece7db;
+    --ink-soft:    #a29b8b;
+    --indigo:      #8fb2dd;
+    --indigo-soft: #5d7fa8;
+    --vermilion:   #e8794f;
+    --thread:      #5a5342;
+    --border:      #413b31;
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--kinari);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.85;
+  font-feature-settings: "palt" 1;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection { background: var(--vermilion); color: #fff; }
+
+a { color: inherit; }
+
+:focus-visible {
+  outline: 2px solid var(--vermilion);
+  outline-offset: 3px;
+}
+
+.skip-link {
+  position: absolute; left: -9999px; top: 0;
+  background: var(--ink); color: var(--kinari);
+  padding: 12px 20px; z-index: 100;
+}
+.skip-link:focus { left: 0; }
+
+/* ---------- 継ぎ接ぎのグリッド ---------- */
+
+.quilt {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 3px;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: clamp(10px, 2.5vw, 28px);
+}
+
+.patch {
+  position: relative;
+  grid-column: 1 / -1;
+  background: var(--surface);
+  padding: var(--step);
+  overflow: hidden;
+}
+
+/* 縫い目。上辺と左辺に走らせる */
+.patch::before,
+.patch::after {
+  content: "";
+  position: absolute;
+  background-repeat: repeat;
+  pointer-events: none;
+}
+.patch::before {
+  left: 10px; right: 10px; top: 10px; height: 1.5px;
+  background-image: repeating-linear-gradient(90deg, var(--thread) 0 5px, transparent 5px 11px);
+  transform: scaleX(0); transform-origin: left center;
+}
+.patch::after {
+  top: 10px; bottom: 10px; left: 10px; width: 1.5px;
+  background-image: repeating-linear-gradient(180deg, var(--thread) 0 5px, transparent 5px 11px);
+  transform: scaleY(0); transform-origin: center top;
+}
+
+@media (min-width: 900px) {
+  .patch--about   { grid-column: 1 / 9;  }
+  .patch--motif   { grid-column: 9 / 13; }
+  .patch--work-a  { grid-column: 1 / 8;  }
+  .patch--work-b  { grid-column: 8 / 13; }
+  .patch--record  { grid-column: 1 / 9;  }
+  .patch--links   { grid-column: 9 / 13; }
+}
+
+/* ---------- 縫合アニメーション（各パッチ一度きり） ---------- */
+
+.js .patch::before { transition: transform .5s var(--ease); }
+.js .patch::after  { transition: transform .5s var(--ease) .1s; }
+.js .patch > *     { opacity: 0; transform: translateY(10px); }
+.js .patch.sewn > * {
+  opacity: 1; transform: none;
+  transition: opacity .5s ease-out, transform .5s var(--ease);
+}
+.js .patch.sewn::before { transform: scaleX(1); }
+.js .patch.sewn::after  { transform: scaleY(1); }
+
+.js .patch.sewn > *:nth-child(1) { transition-delay: .16s; }
+.js .patch.sewn > *:nth-child(2) { transition-delay: .22s; }
+.js .patch.sewn > *:nth-child(3) { transition-delay: .28s; }
+.js .patch.sewn > *:nth-child(4) { transition-delay: .34s; }
+.js .patch.sewn > *:nth-child(5) { transition-delay: .40s; }
+.js .patch.sewn > *:nth-child(n+6) { transition-delay: .46s; }
+
+/* ---------- 表題 ---------- */
+
+.patch--hero {
+  min-height: clamp(340px, 56vh, 540px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(14px, 2vw, 22px);
+  padding-block: clamp(40px, 6vw, 72px);
+}
+
+.hero__eyebrow {
+  margin: 0;
+  font-size: .72rem;
+  letter-spacing: .34em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.hero__name {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(3rem, 11vw, 6.5rem);
+  line-height: 1.06;
+  letter-spacing: .04em;
+}
+.hero__gap { display: inline-block; width: .3em; }
+
+.hero__lead {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.05rem, 2.6vw, 1.6rem);
+  line-height: 1.9;
+  color: var(--indigo);
+}
+
+.hero__meta {
+  margin: 0;
+  font-size: .9rem;
+  letter-spacing: .12em;
+  color: var(--ink-soft);
+}
+
+.hero__swatch { display: flex; gap: 2px; margin-top: auto; }
+.hero__swatch span { display: block; height: 10px; flex: 1; background: var(--c); }
+
+/* ---------- 見出し ---------- */
+
+.patch__title {
+  margin: 0 0 1.4em;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 500;
+  letter-spacing: .3em;
+  color: var(--ink-soft);
+}
+.patch--label { padding-block: clamp(14px, 2vw, 22px); }
+.patch--label .patch__title { margin: 0; }
+
+/* ---------- 私について ---------- */
+
+.prose { margin: 0; max-width: 34em; }
+.prose p { margin: 0 0 1.5em; }
+.prose p:last-child { margin-bottom: 0; }
+
+/* ---------- 装飾パッチ ---------- */
+
+.patch--motif { padding: 8px; min-height: 160px; }
+.motif {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+  gap: 2px;
+  height: 100%;
+  min-height: 150px;
+}
+.motif span { display: block; }
+.motif__a { grid-area: 1 / 1 / 3 / 4; background: var(--indigo); }
+.motif__b { grid-area: 1 / 4 / 3 / 6; background: var(--kinari-deep); }
+.motif__c { grid-area: 3 / 1 / 6 / 3; background: var(--indigo-soft); }
+.motif__d { grid-area: 3 / 3 / 5 / 6; background: var(--vermilion); }
+.motif__e { grid-area: 5 / 3 / 6 / 6; background: var(--kinari-deep); }
+
+@media (min-width: 900px) { .motif { min-height: 300px; } }
+
+/* ---------- 制作物 ---------- */
+
+.work__head { display: flex; gap: 18px; align-items: flex-start; margin-bottom: 1.3em; }
+.work__icon {
+  flex: 0 0 auto; width: 56px; height: 56px;
+  border-radius: 13px; display: block;
+}
+.work__icon--drawn svg { display: block; width: 56px; height: 56px; }
+
+.work__name {
+  margin: 0 0 .35em;
+  font-family: var(--font-display);
+  font-size: 1.5rem; font-weight: 700; letter-spacing: .04em;
+}
+.work__tag { margin: 0; font-size: .92rem; line-height: 1.7; color: var(--ink-soft); }
+.work__body { margin: 0 0 1.5em; }
+
+.work__stack {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  margin: 0 0 1.1em; padding: 0; list-style: none;
+}
+.work__stack li {
+  font-size: .74rem; letter-spacing: .08em;
+  padding: 3px 10px;
+  border: 1px solid var(--border);
+  color: var(--ink-soft);
+}
+
+.work__meta {
+  display: flex; flex-wrap: wrap; gap: 4px 18px;
+  margin: 0;
+  font-size: .78rem; letter-spacing: .04em; color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- 実績・資格 ---------- */
+
+.record__group {
+  margin: 2.4em 0 .9em;
+  font-size: .82rem; font-weight: 600; letter-spacing: .22em;
+  color: var(--vermilion);
+}
+.record__group:first-of-type { margin-top: 0; }
+
+.record { margin: 0; padding: 0; list-style: none; }
+.record__item {
+  padding: 1em 0;
+  border-top: 1px solid var(--border);
+}
+.record__item:last-child { border-bottom: 1px solid var(--border); }
+
+.record__date {
+  margin: 0 0 .2em;
+  font-size: .76rem; letter-spacing: .1em; color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+.record__name { margin: 0; font-size: 1rem; line-height: 1.6; }
+.record__name b {
+  font-family: var(--font-display);
+  font-weight: 700; color: var(--indigo);
+  margin-left: .2em;
+}
+.record__note {
+  margin: .5em 0 0; max-width: 34em;
+  font-size: .86rem; line-height: 1.8; color: var(--ink-soft);
+}
+
+/* ---------- リンク ---------- */
+
+/* 実績パッチと同じ行なので縦に伸びる。余った丈の底に奥付を置く */
+.patch--links { display: flex; flex-direction: column; }
+.patch--links .patch__title { flex: 0 0 auto; }
+
+.links { margin: 0; padding: 0; list-style: none; }
+.links li + li { margin-top: 2px; }
+.links a {
+  display: flex; align-items: center; gap: 12px;
+  min-height: 48px; padding: 10px 12px;
+  text-decoration: none;
+  background: transparent;
+  transition: background .18s ease-out, color .18s ease-out;
+}
+.links a:hover { background: var(--kinari-deep); color: var(--indigo); }
+.links__icon { flex: 0 0 auto; width: 19px; height: 19px; }
+.links__handle {
+  margin-left: auto;
+  font-size: .78rem; color: var(--ink-soft);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+.colophon {
+  margin: 2.4em 0 0;
+  margin-top: auto;
+  padding-top: 1.2em;
+  border-top: 1px solid var(--border);
+  font-size: .74rem; letter-spacing: .08em; color: var(--ink-soft);
+}
+
+/* ---------- ハムスター ---------- */
+
+.hamster {
+  position: fixed;
+  left: 0; bottom: 8px;
+  width: 48px; height: 46px;
+  padding: 18px 4px 0;          /* タップ領域を 44px 以上に広げる */
+  z-index: 40;
+  cursor: pointer;
+  background: none; border: 0; padding: 0;
+  will-change: transform;
+}
+.hamster canvas {
+  display: block; width: 40px; height: 28px;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* ---------- 動きを減らす設定 ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .js .patch > *,
+  .js .patch.sewn > * { opacity: 1; transform: none; transition: none; }
+  .js .patch::before { transform: scaleX(1); transition: none; }
+  .js .patch::after  { transform: scaleY(1); transition: none; }
+  .links a { transition: none; }
+}
