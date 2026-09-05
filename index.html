@@ -17,19 +17,23 @@
 <script>/* main.js が読めなかった場合に本文が消えたままにならないよう、3秒で保険を外す */
 var d=document.documentElement;d.className+=" js";setTimeout(function(){if(!d.dataset.sewInit)d.className=d.className.replace(" js","");},3000);</script>
 <!-- 更新したら v= の数字を上げること。古い CSS がキャッシュされたままになるのを防ぐ -->
-<link rel="stylesheet" href="style.css?v=4">
+<link rel="stylesheet" href="style.css?v=5">
 </head>
 <body>
-<a class="skip-link" href="#main">本文へスキップ</a>
+<a class="skip-link" href="#main" data-en="Skip to content">本文へスキップ</a>
 
 <header class="masthead">
   <a class="masthead__name" href="#top">Eristotl3</a>
-  <nav class="masthead__nav" aria-label="ページ内">
-    <a href="#about">私について</a>
-    <a href="#works">制作物</a>
-    <a href="#record">実績</a>
-    <a href="#links">リンク</a>
+  <nav class="masthead__nav" aria-label="ページ内" data-en-label="On this page">
+    <a href="#about" data-en="About">私について</a>
+    <a href="#works" data-en="Work">制作物</a>
+    <a href="#record" data-en="Record">実績</a>
+    <a href="#links" data-en="Links">リンク</a>
   </nav>
+  <div class="langtoggle" role="group" aria-label="Language">
+    <button type="button" class="langtoggle__btn" data-lang="ja" aria-pressed="true">JP</button>
+    <button type="button" class="langtoggle__btn" data-lang="en" aria-pressed="false">EN</button>
+  </div>
 </header>
 
 <main id="main" class="quilt">
@@ -38,38 +42,38 @@ var d=document.documentElement;d.className+=" js";setTimeout(function(){if(!d.da
   <header class="patch patch--hero" id="top">
     <div class="hero__body">
       <p class="hero__eyebrow" data-enter="0">PORTFOLIO<span class="rule"></span>2026</p>
-      <h1 class="hero__name" data-enter="1">岩田<span class="hero__gap"></span>真幸</h1>
-      <p class="hero__lead" data-enter="2">自分が本当に使うものを、<br>納得がいくまで作る。</p>
-      <p class="hero__meta" data-enter="3">早稲田大学<span class="dot"></span>個人開発</p>
+      <h1 class="hero__name" data-enter="1" data-en="Masayuki Iwata">岩田<span class="hero__gap"></span>真幸</h1>
+      <p class="hero__lead" data-enter="2" data-en="I build the tools I actually use,<br>and I keep working until they are right.">自分が本当に使うものを、<br>納得がいくまで作る。</p>
+      <p class="hero__meta" data-enter="3" data-en="Waseda University &#183; Independent projects">早稲田大学<span class="dot"></span>個人開発</p>
     </div>
     <div class="hero__mark" id="mark" aria-hidden="true"></div>
   </header>
 
   <!-- ============ 私について ============ -->
   <section class="patch patch--about" id="about" aria-labelledby="about-h">
-    <h2 class="patch__title" id="about-h">私について</h2>
+    <h2 class="patch__title" id="about-h" data-en="About">私について</h2>
     <div class="prose">
-      <p>高校ではプログラミング同好会で部長を務め、5人で毎週の勉強会を運営していました。文化祭に向けて Unity で学校をテーマにしたゲームを作り、当日は来場者に実際に遊んでもらいました。</p>
-      <p>今は、AI がどういう仕組みで動いているのかを学びながら、それを実際に使える製品の形にすることに関心があります。個人開発では、自分が困っていたことを解決するものを作り、きちんと動くところまで持っていくことを大切にしています。エンタープライズの水準で通用する実装力を身につけて、作ったものを積み上げていきたいと考えています。</p>
+      <p data-en="In high school I led the programming club, running a weekly study group for the five of us. For the school festival we built a game in Unity set in our own school, and visitors played it on the day.">高校ではプログラミング同好会で部長を務め、5人で毎週の勉強会を運営していました。文化祭に向けて Unity で学校をテーマにしたゲームを作り、当日は来場者に実際に遊んでもらいました。</p>
+      <p data-en="I am studying how AI systems actually work, and I want to turn that into products people can use. In my own projects I build things that solve problems I have had myself, and I care about carrying them all the way to something that genuinely runs. I want the kind of engineering skill that holds up at enterprise scale, and to keep adding to what I have built.">今は、AI がどういう仕組みで動いているのかを学びながら、それを実際に使える製品の形にすることに関心があります。個人開発では、自分が困っていたことを解決するものを作り、きちんと動くところまで持っていくことを大切にしています。エンタープライズの水準で通用する実装力を身につけて、作ったものを積み上げていきたいと考えています。</p>
     </div>
   </section>
 
   <!-- ============ 実績の要約（色面のパッチ） ============ -->
   <aside class="patch patch--figures" aria-labelledby="figures-h">
-    <h2 class="patch__title patch__title--invert" id="figures-h">主な実績</h2>
+    <h2 class="patch__title patch__title--invert" id="figures-h" data-en="Highlights">主な実績</h2>
     <dl class="figures stagger">
-      <div class="figure"><dt>実用英語技能検定</dt><dd>1級</dd></div>
+      <div class="figure"><dt data-en="EIKEN">実用英語技能検定</dt><dd data-en="Grade 1">1級</dd></div>
       <div class="figure"><dt>TOEFL iBT</dt><dd>100</dd></div>
-      <div class="figure"><dt>韓国語能力試験</dt><dd>6級</dd></div>
-      <div class="figure"><dt>JDLA G検定</dt><dd>合格</dd></div>
-      <div class="figure"><dt>P共通テスト</dt><dd>京都府1位</dd></div>
+      <div class="figure"><dt data-en="TOPIK">韓国語能力試験</dt><dd data-en="Level 6">6級</dd></div>
+      <div class="figure"><dt data-en="JDLA G-test">JDLA G検定</dt><dd data-en="Passed">合格</dd></div>
+      <div class="figure"><dt data-en="P Programming Test">P共通テスト</dt><dd data-en="1st in Kyoto">京都府1位</dd></div>
     </dl>
   </aside>
 
   <!-- ============ 制作物 ============ -->
   <div class="patch patch--label" id="works">
-    <h2 class="patch__title">制作物</h2>
-    <p class="patch__aside">個人開発<span class="dot"></span>2件</p>
+    <h2 class="patch__title" data-en="Work">制作物</h2>
+    <p class="patch__aside" data-en="Independent projects &#183; 2">個人開発<span class="dot"></span>2件</p>
   </div>
 
   <!-- 追加するときは <article class="patch patch--work work"> のブロックを複製する -->
@@ -77,7 +81,7 @@ var d=document.documentElement;d.className+=" js";setTimeout(function(){if(!d.da
   <article class="patch patch--feature work" aria-labelledby="work-aegis">
     <div class="work__head">
       <h3 class="work__name" id="work-aegis">Aegis</h3>
-      <p class="work__tag">複数の AI に議論させて、株式の判断材料を提示するデスクトップアプリ</p>
+      <p class="work__tag" data-en="A desktop app where several AI agents argue a position, then set out what the call actually rests on">複数の AI に議論させて、株式の判断材料を提示するデスクトップアプリ</p>
     </div>
 
     <figure class="shots">
@@ -87,19 +91,19 @@ var d=document.documentElement;d.className+=" js";setTimeout(function(){if(!d.da
       <div class="shot" style="--ratio: 2874 / 1556">
         <img src="assets/aegis-portfolio.png" alt="Aegis の Portfolio 画面。評価額と含み損益、AI 関連銘柄への集中度が上限に対して何パーセントかを示す帯、各銘柄の取得単価と評価額、30日相関と組入れ全体のベータ、行動フラグ、CSV と JSON での書き出しが並んでいる。" loading="lazy" decoding="async">
       </div>
-      <figcaption>上：監視銘柄の一覧　下：保有状況と、集中度・相関の点検</figcaption>
+      <figcaption data-en="Top: the watchlist. Bottom: holdings, with concentration and correlation checks.">上：監視銘柄の一覧　下：保有状況と、集中度・相関の点検</figcaption>
     </figure>
 
     <div class="work__cols">
-      <p class="work__body">「AI に実際に分析させ、異なる観点から議論させた上で判断材料を出せるのか」を確かめたくて作りました。Alpaca の WebSocket で価格を受け取り、Rust 側で1分足に集約して指標を計算します。その上で4つの役割を与えた AI が意見を出し合い、最後に議長役がまとめます。</p>
-      <p class="work__body">出力には必ず「この判断が誤りだと分かる条件」と「最も強い反対意見」を含めるようにしました。予測が当たったかどうかも、後から採点しています。売買を示唆する信号灯はあえて実装していません。作る過程で、TradingView や Alpaca の API の使いどころを知ることができました。</p>
+      <p class="work__body" data-en="I wanted to find out whether AI could genuinely analyse a market, argue it from opposing angles, and produce something worth reading. Prices arrive over the Alpaca WebSocket; Rust aggregates them into one-minute bars and computes the indicators. Four agents with assigned roles then argue it out, and a chair writes the summary.">「AI に実際に分析させ、異なる観点から議論させた上で判断材料を出せるのか」を確かめたくて作りました。Alpaca の WebSocket で価格を受け取り、Rust 側で1分足に集約して指標を計算します。その上で4つの役割を与えた AI が意見を出し合い、最後に議長役がまとめます。</p>
+      <p class="work__body" data-en="Every output has to state what would prove the call wrong, and the strongest argument against it. Past predictions are scored after the fact. There is deliberately no buy or sell indicator. Building it taught me where the TradingView and Alpaca APIs are, and are not, the right tool.">出力には必ず「この判断が誤りだと分かる条件」と「最も強い反対意見」を含めるようにしました。予測が当たったかどうかも、後から採点しています。売買を示唆する信号灯はあえて実装していません。作る過程で、TradingView や Alpaca の API の使いどころを知ることができました。</p>
     </div>
 
     <ul class="stack stagger"><li>Tauri</li><li>Rust</li><li>React</li><li>TypeScript</li><li>SQLite</li></ul>
     <dl class="metrics stagger">
-      <div><dt>Rust</dt><dd data-count="15600">15,600<span>行</span></dd></div>
-      <div><dt>TypeScript</dt><dd data-count="4500">4,500<span>行</span></dd></div>
-      <div><dt>対象</dt><dd>macOS</dd></div>
+      <div><dt>Rust</dt><dd data-count="15600" data-en="15,600<span>lines</span>">15,600<span>行</span></dd></div>
+      <div><dt>TypeScript</dt><dd data-count="4500" data-en="4,500<span>lines</span>">4,500<span>行</span></dd></div>
+      <div><dt data-en="Platform">対象</dt><dd>macOS</dd></div>
     </dl>
   </article>
 
@@ -108,7 +112,7 @@ var d=document.documentElement;d.className+=" js";setTimeout(function(){if(!d.da
       <img class="work__mark" src="assets/kouza-note.png" alt="" width="256" height="256" loading="lazy" decoding="async">
       <div>
         <h3 class="work__name" id="work-kouza">口座ノート</h3>
-        <p class="work__tag">複数の口座とカードにまたがる支出を、手元だけで追跡・分析する家計簿アプリ</p>
+        <p class="work__tag" data-en="A household ledger that tracks and analyses spending across several accounts and cards, entirely on your own devices">複数の口座とカードにまたがる支出を、手元だけで追跡・分析する家計簿アプリ</p>
       </div>
     </div>
 
@@ -122,27 +126,27 @@ var d=document.documentElement;d.className+=" js";setTimeout(function(){if(!d.da
       <div class="shot shot--phone" style="--ratio: 1080 / 2424">
         <img src="assets/kouza-analysis.png" alt="口座ノートの分析画面。月ごとの収入と支出、収支の差額と、カテゴリ別の支出をドーナツ図で示している。" loading="lazy" decoding="async">
       </div>
-      <figcaption>左から　概要　入出金　分析</figcaption>
+      <figcaption data-en="From left: overview, transactions, analysis.">左から　概要　入出金　分析</figcaption>
     </figure>
 
     <div class="work__cols">
-      <p class="work__body">自分の消費が複数の口座とカードに散らばっていて、全体を把握できないことが出発点でした。CSV の取り込みに対応させたので、明細を一件ずつ入力する手間がありません。</p>
-      <p class="work__body">記録は端末内にだけ残り、機種同士の同期は同一ネットワーク内で暗号化して直接やり取りします。クラウドには一切送っていません。</p>
+      <p class="work__body" data-en="It started because my spending was scattered across several accounts and cards and I could never see the whole picture. It imports CSV statements, so there is no entering transactions one at a time.">自分の消費が複数の口座とカードに散らばっていて、全体を把握できないことが出発点でした。CSV の取り込みに対応させたので、明細を一件ずつ入力する手間がありません。</p>
+      <p class="work__body" data-en="Records stay on the device. Devices sync directly over the local network, encrypted. Nothing is sent to a cloud service.">記録は端末内にだけ残り、機種同士の同期は同一ネットワーク内で暗号化して直接やり取りします。クラウドには一切送っていません。</p>
     </div>
 
     <ul class="stack stagger"><li>Flutter</li><li>Dart</li><li>Android</li><li>macOS</li></ul>
     <dl class="metrics stagger">
-      <div><dt>本体</dt><dd data-count="5200">5,200<span>行</span></dd></div>
-      <div><dt>テスト</dt><dd data-count="1000">1,000<span>行</span></dd></div>
-      <div><dt>版</dt><dd>1.6.1</dd></div>
+      <div><dt data-en="Source">本体</dt><dd data-count="5200" data-en="5,200<span>lines</span>">5,200<span>行</span></dd></div>
+      <div><dt data-en="Tests">テスト</dt><dd data-count="1000" data-en="1,000<span>lines</span>">1,000<span>行</span></dd></div>
+      <div><dt data-en="Version">版</dt><dd>1.6.1</dd></div>
     </dl>
   </article>
 
   <!-- ============ 実績・資格 ============ -->
   <section class="patch patch--record" id="record" aria-labelledby="record-h">
-    <h2 class="patch__title" id="record-h">実績・資格</h2>
+    <h2 class="patch__title" id="record-h" data-en="Record">実績・資格</h2>
 
-    <h3 class="record__group">語学</h3>
+    <h3 class="record__group" data-en="Languages">語学</h3>
     <ul class="record stagger">
       <li class="record__item">
         <p class="record__date">2026.08</p>
@@ -150,51 +154,51 @@ var d=document.documentElement;d.className+=" js";setTimeout(function(){if(!d.da
       </li>
       <li class="record__item">
         <p class="record__date">2024.07</p>
-        <p class="record__name">実用英語技能検定 <b>1級</b></p>
+        <p class="record__name" data-en="EIKEN <b>Grade 1</b>">実用英語技能検定 <b>1級</b></p>
       </li>
       <li class="record__item">
         <p class="record__date">2022.10</p>
-        <p class="record__name">韓国語能力試験（TOPIK） <b>6級</b></p>
-        <p class="record__note">TOPIK の最上位等級。</p>
+        <p class="record__name" data-en="TOPIK <b>Level 6</b>">韓国語能力試験（TOPIK） <b>6級</b></p>
+        <p class="record__note" data-en="The highest level awarded.">TOPIK の最上位等級。</p>
       </li>
     </ul>
 
-    <h3 class="record__group">資格</h3>
+    <h3 class="record__group" data-en="Certifications">資格</h3>
     <ul class="record stagger">
       <li class="record__item">
         <p class="record__date">2023.03</p>
-        <p class="record__name">JDLA Deep Learning for GENERAL（G検定） <b>2023 #3 合格</b></p>
-        <p class="record__note">日本ディープラーニング協会による、ディープラーニングの事業活用に関する知識を問う検定。</p>
+        <p class="record__name" data-en="JDLA Deep Learning for GENERAL <b>Passed, 2023 #3</b>">JDLA Deep Learning for GENERAL（G検定） <b>2023 #3 合格</b></p>
+        <p class="record__note" data-en="A certification from the Japan Deep Learning Association, covering the practical application of deep learning in business.">日本ディープラーニング協会による、ディープラーニングの事業活用に関する知識を問う検定。</p>
       </li>
     </ul>
 
-    <h3 class="record__group">大会</h3>
+    <h3 class="record__group" data-en="Competitions">大会</h3>
     <ul class="record stagger">
       <li class="record__item">
         <p class="record__date">2023.01</p>
-        <p class="record__name">P共通テスト <b>京都府1位</b></p>
-        <p class="record__note">中高生を対象とした全国規模のプログラミングテスト。paiza が作問・採点を担当し、実際にコードを書いて解く6問で構成される。都道府県別の順位が公表される。</p>
+        <p class="record__name" data-en="P Programming Test <b>1st in Kyoto</b>">P共通テスト <b>京都府1位</b></p>
+        <p class="record__note" data-en="A national programming test for secondary school students. paiza writes and marks it: six problems solved by writing real code, with rankings published by prefecture.">中高生を対象とした全国規模のプログラミングテスト。paiza が作問・採点を担当し、実際にコードを書いて解く6問で構成される。都道府県別の順位が公表される。</p>
       </li>
       <li class="record__item">
         <p class="record__date">2022.09</p>
-        <p class="record__name">第3回 全国高等学校AIアスリート選手権大会 <b>全国大会出場</b></p>
-        <p class="record__note">高校生を対象とした AI・ICT の競技大会。機械学習モデルの精度を競う AI Quest と、CTF 形式でセキュリティの問題を解く Cyber Quest に出場し、地区予選を通過して全国大会に進出。</p>
+        <p class="record__name" data-en="3rd National High School AI Athlete Championship <b>National finals</b>">第3回 全国高等学校AIアスリート選手権大会 <b>全国大会出場</b></p>
+        <p class="record__note" data-en="An AI and ICT competition for high school students. I entered AI Quest, where machine learning models compete on accuracy, and Cyber Quest, a capture-the-flag security event, and came through the regional round to the national finals.">高校生を対象とした AI・ICT の競技大会。機械学習モデルの精度を競う AI Quest と、CTF 形式でセキュリティの問題を解く Cyber Quest に出場し、地区予選を通過して全国大会に進出。</p>
       </li>
     </ul>
 
-    <h3 class="record__group">課外活動</h3>
+    <h3 class="record__group" data-en="Activities">課外活動</h3>
     <ul class="record stagger">
       <li class="record__item">
-        <p class="record__date">高校1年次</p>
-        <p class="record__name">プログラミング同好会 <b>部長</b></p>
-        <p class="record__note">5名で毎週の勉強会を運営。文化祭では Unity で作った学校をテーマにしたゲームを公開し、来場者に遊んでもらった。</p>
+        <p class="record__date" data-en="Year 1, high school">高校1年次</p>
+        <p class="record__name" data-en="Programming Club <b>President</b>">プログラミング同好会 <b>部長</b></p>
+        <p class="record__note" data-en="Ran a weekly study group with five members. At the school festival we released a Unity game set in our own school, and visitors played it.">5名で毎週の勉強会を運営。文化祭では Unity で作った学校をテーマにしたゲームを公開し、来場者に遊んでもらった。</p>
       </li>
     </ul>
   </section>
 
   <!-- ============ リンク ============ -->
   <footer class="patch patch--links" id="links" aria-labelledby="links-h">
-    <h2 class="patch__title" id="links-h">リンク</h2>
+    <h2 class="patch__title" id="links-h" data-en="Links">リンク</h2>
     <ul class="links stagger">
       <li><a href="https://github.com/eristotl3" rel="me noopener" aria-label="GitHub（eristotl3）">
         <svg class="links__icon" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
@@ -221,6 +225,6 @@ var d=document.documentElement;d.className+=" js";setTimeout(function(){if(!d.da
   </div>
 </div>
 
-<script src="main.js?v=4" defer></script>
+<script src="main.js?v=5" defer></script>
 </body>
 </html>

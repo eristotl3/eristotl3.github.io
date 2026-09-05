@@ -36,6 +36,40 @@ if (!('IntersectionObserver' in window)) {
 
 document.getElementById('year').textContent = new Date().getFullYear();
 
+/* ---------- 1a. 日本語と英語の切り替え ---------- */
+/* 日本語を正本とし、英語は各要素の data-en に HTML で持たせている。
+   ファイルを分けないのは、構造を直したときに片方だけ古くなるのを避けるため。 */
+
+const I18N = document.querySelectorAll('[data-en]');
+const JA = new Map();
+I18N.forEach(el => JA.set(el, el.innerHTML));
+
+const TITLE = { ja: document.title, en: 'Masayuki Iwata' };
+const NAV = document.querySelector('.masthead__nav');
+const NAV_LABEL = { ja: NAV ? NAV.getAttribute('aria-label') : '', en: NAV ? NAV.dataset.enLabel : '' };
+
+function setLang(lang, remember) {
+  const en = lang === 'en';
+  I18N.forEach(el => { el.innerHTML = en ? el.dataset.en : JA.get(el); });
+  document.documentElement.lang = en ? 'en' : 'ja';
+  document.title = en ? TITLE.en : TITLE.ja;
+  if (NAV) NAV.setAttribute('aria-label', en ? NAV_LABEL.en : NAV_LABEL.ja);
+  document.querySelectorAll('.langtoggle__btn').forEach(b => {
+    b.setAttribute('aria-pressed', String(b.dataset.lang === lang));
+  });
+  if (remember) { try { localStorage.setItem('lang', lang); } catch (e) {} }
+}
+
+// URL の ?lang=en を最優先。英語話者にその場で英語版を渡せるようにするため
+const urlLang = new URLSearchParams(location.search).get('lang');
+let saved = null;
+try { saved = localStorage.getItem('lang'); } catch (e) {}
+setLang(urlLang === 'en' || urlLang === 'ja' ? urlLang : (saved === 'en' ? 'en' : 'ja'), false);
+
+document.querySelectorAll('.langtoggle__btn').forEach(btn => {
+  btn.addEventListener('click', () => setLang(btn.dataset.lang, true));
+});
+
 /* ---------- 1b. 3×3 の継ぎ接ぎの印 ---------- */
 /* 布片が散らばった状態から一度だけ組み上がる。組み上がったら動かない。 */
 
