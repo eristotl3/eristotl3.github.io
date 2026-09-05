@@ -114,6 +114,11 @@ body::after {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
+/* 英語では全角の詰め組みを外し、行間もやや詰める */
+html[lang="en"] body { font-feature-settings: normal; line-height: 1.72; }
+html[lang="en"] .prose { max-width: 62ch; }
+html[lang="en"] .work__body, html[lang="en"] .record__note { max-width: 62ch; }
+
 ::selection { background: var(--vermilion); color: #fff; }
 a { color: inherit; }
 :focus-visible { outline: 2px solid var(--vermilion); outline-offset: 3px; }
@@ -145,7 +150,10 @@ a { color: inherit; }
   font-family: var(--display); font-weight: 700;
   font-size: 15px; letter-spacing: .12em; text-decoration: none;
 }
-.masthead__nav { margin-left: auto; display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
+.masthead__nav {
+  margin-left: auto; display: flex; gap: 4px;
+  min-width: 0; overflow-x: auto; scrollbar-width: none;
+}
 .masthead__nav::-webkit-scrollbar { display: none; }
 .masthead__nav a {
   position: relative; white-space: nowrap; text-decoration: none;
@@ -163,6 +171,31 @@ a { color: inherit; }
 }
 @media (hover: hover) and (pointer: fine) {
   .masthead__nav a:hover::after { transform: scaleX(1); transform-origin: left; }
+}
+
+/* 言語の切り替え。押されている側だけが地色を持つ */
+.langtoggle {
+  flex: 0 0 auto; display: flex; margin-left: 14px;
+  border: 1px solid var(--border);
+}
+.langtoggle__btn {
+  appearance: none; border: 0; background: none; cursor: pointer;
+  font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em;
+  color: var(--ink-3); padding: 0 11px; min-height: 44px;   /* タップ領域 */
+  transition: color .25s var(--ease-snap), background-color .25s var(--ease-snap);
+}
+.langtoggle__btn + .langtoggle__btn { border-left: 1px solid var(--border); }
+.langtoggle__btn[aria-pressed="true"] { background: var(--ink); color: var(--surface); }
+@media (hover: hover) and (pointer: fine) {
+  .langtoggle__btn[aria-pressed="false"]:hover { color: var(--ink); background: var(--surface-2); }
+}
+
+/* 狭い画面ではページ内リンクを隠す。4項目が135pxに収まらず、
+   横スクロールしないと2項目が見えない状態になるため。
+   一枚ものなので、素直に下へスクロールしてもらうほうが早い */
+@media (max-width: 600px) {
+  .masthead__nav { display: none; }
+  .langtoggle { margin-left: auto; }
 }
 
 /* ── 3. 継ぎ接ぎのグリッド ───────────────────────────── */
@@ -581,6 +614,7 @@ a { color: inherit; }
   .record__item, .shot img { transition: none; }
   .links a:active, .masthead__nav a:active, .masthead__name:active { transform: none; }
   .hamster { transition: none; }
+  .langtoggle__btn { transition: none; }
   .js .stagger > *, .js .patch.sewn .stagger > * { opacity: 1; transform: none; transition: none; }
   .shot img { animation: none !important; }
 }
